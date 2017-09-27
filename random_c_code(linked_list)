@@ -1,0 +1,729 @@
+
+ HW2.cpp : 定義主控台應用程式的進入點。
+
+
+//linked list for shuffle
+
+
+#include "stdafx.h"
+
+
+#include <stdlib.h>
+
+
+#include <stdio.h>
+
+
+typedef struct node
+
+
+{
+
+
+	int num;
+
+
+	struct node *next;
+
+
+}NODE;
+
+
+struct NODE*head;//golobal variable
+
+
+struct NODE*ans;
+
+
+NODE *get_node(void)
+
+
+{
+
+
+	NODE *link;//產生一個link pointer to node
+
+
+	link = (NODE*)malloc(sizeof(NODE));//(同樣指向node的pointer)產生node
+
+
+	if (link == NULL)
+
+
+	{
+
+
+		printf("memory_leak");
+
+
+		//exit(1);
+
+
+	}
+
+
+	return(link);
+
+
+}
+
+
+NODE *add_node(NODE*head, NODE*ptr, int data)
+
+
+{
+
+
+	NODE *new_node;
+
+
+	new_node = get_node();
+
+
+	new_node->num = data;
+
+
+	new_node->next = NULL;//initialize
+
+
+	if (ptr == NULL) //first_point
+
+
+	{
+
+
+		new_node->next = head;
+
+
+		head = new_node;
+
+
+	}
+
+
+	else
+
+
+	{
+
+
+		if (ptr->next == NULL)//boundary_condition(last_point)
+
+
+		{
+
+
+			new_node->next = NULL;
+
+
+			ptr = new_node;
+
+
+		}
+
+
+		else
+
+
+		{
+
+
+			new_node->next = ptr->next;//generalize(ptr structure point next)
+
+
+			ptr = new_node;
+
+
+		}
+
+
+	}
+
+
+	return(head);
+
+
+}
+
+
+NODE *find_node(NODE*head, int num)
+
+
+{
+
+
+	NODE*ptr;
+
+
+
+	ptr = head;
+
+
+	while (ptr != NULL)
+
+
+	{
+
+
+		if (ptr->num == num)
+
+
+			return (ptr);
+
+
+		ptr = ptr->next;
+
+
+	}
+
+
+	return(ptr);
+
+
+}
+
+
+NODE *find_pointernode( NODE*head, int tem)
+
+
+{
+
+
+	NODE*ptr;
+
+
+	int i;
+
+
+	ptr = head;
+
+
+	if (ptr != NULL)
+
+
+	{
+
+
+		for (i = 0; i <= tem; i++)
+
+
+		{
+
+
+			ptr = ptr->next;
+
+
+		} 
+
+
+		return(ptr);
+
+
+	}
+
+
+	else
+
+
+	return(ptr);
+
+
+}
+
+
+NODE *cut_andsave_node(NODE*head, NODE*ptr)
+
+
+{
+
+
+	struct node_pointer {
+
+
+		NODE *ptr;
+
+
+		NODE *head;
+
+
+	}pointerneed,*node_pointer;
+
+
+	node_pointer = &pointerneed;
+
+
+	node_pointer->head = head;
+
+
+	node_pointer->ptr = ptr;
+
+
+	NODE*previous; //指向前一個節點
+
+
+	if (ptr == head) //現在這個點也是起點
+
+
+	{
+
+
+		//previous->next = head;
+
+
+		head = head->next;
+
+
+		//ptr = head;
+
+
+		//node_pointer->head = head;
+
+
+		return(head);
+
+
+	}
+
+
+	else
+
+
+	{
+
+
+		previous = head;//find_ptr of the previous
+
+
+		while (previous->next != ptr)
+
+
+			previous = previous->next;
+
+
+		if (ptr->next == NULL)
+
+
+		{
+
+
+			previous->next = NULL;
+
+
+			node_pointer->ptr = ptr;
+
+
+		}
+
+
+		else
+
+
+		{
+
+
+			previous->next = ptr->next;
+
+
+			node_pointer->ptr = ptr;
+
+
+		}
+
+
+		return(ptr);
+
+
+		free(ptr);
+
+
+	}
+
+
+	//return(head);
+
+
+}
+
+
+NODE *cut_node(NODE*head, NODE*ptr)
+
+
+{
+
+
+	NODE* previous; //指向前一個節點
+
+
+	if (ptr == head) //現在這個點也是起點(key_point)
+
+
+	{
+
+
+		head = head->next;
+
+
+		return(head);
+
+
+	}
+
+
+	else
+
+
+	{
+
+
+		previous = head;//find_ptr of the previous
+
+
+		while (previous->next != ptr)
+
+
+		{
+
+
+			previous = previous->next;
+
+
+		}
+
+
+		if (ptr->next == NULL)
+
+
+			previous->next = NULL;
+
+
+		else
+
+
+		{
+
+
+			previous->next = ptr->next;
+
+
+
+		}
+
+
+	}
+
+
+	//return(ptr);
+
+
+	free(ptr);
+
+
+	return(head);
+
+
+}
+
+
+int length(NODE *p) /* 此函數計算節點 p 之後之長度 */
+
+
+{
+
+
+	int num = 0;
+
+
+	NODE *after = p->next;
+
+
+	while(after != NULL) 
+
+
+	{
+
+
+		num++;
+
+
+		after = after->next;
+
+
+	}
+
+
+	return(num);
+
+
+}
+
+
+void print(NODE* head)
+
+
+{
+
+
+	NODE* ptr = head;
+
+
+	printf("LIST is\n");
+
+
+	//printf("%d   ", head->num);
+
+
+	//print(head->next);
+
+
+	while (ptr != NULL)
+
+
+	{
+
+
+		printf("%d  ", ptr->num);
+
+
+		ptr = ptr->next;
+
+
+	}
+
+
+}
+
+
+//array data structure
+
+
+int N = 10;//(create 10 space )
+
+
+int main()
+
+
+{
+
+
+	int *ptr, tmp, i, j, k, o, p, head_length;
+
+
+	tmp = N;
+
+
+	struct node_pointer {
+
+
+		NODE *ptr;
+
+
+		NODE *head;
+
+
+	}nodewanted, *node_pointer;
+
+
+	node_pointer = &nodewanted;
+
+
+	ptr = initial(N, tmp);
+
+
+
+	head = shuffle();
+
+
+	node_pointer->head = head;
+
+
+	head_length = length(node_pointer->head);
+
+
+	for (i = 0; i < head_length; i++)
+
+
+	{
+
+
+		//ptintf("%d", node_pointer->head->num);
+
+
+		j = (node_pointer->head->num) / tmp;
+
+
+		k = (node_pointer->head->num) % tmp;
+
+
+		*(ptr + j*tmp + k) = 1;
+
+
+		node_pointer->head = node_pointer->head->next;
+	
+
+}
+
+		
+
+	for (p = 0; p < tmp; p++)
+
+
+	{
+
+
+	for (o = 0; o < tmp; o++)
+
+
+	{
+
+
+	printf("%d", *(ptr + p*tmp + o));
+
+
+	}
+
+
+	printf("\n", *(ptr + p*tmp + o));
+
+
+	}
+
+
+	//system("pause");
+
+
+		return 0;
+
+
+	}
+
+
+// zeros(10,10)
+
+
+int initial(int N,int tmp)
+
+
+{
+
+
+	tmp = N;
+
+
+	int  i, j;
+
+
+	int *matrix = (int*)malloc(tmp*tmp * sizeof(int));//create 100 space (pointer)
+
+
+	for (i = 0; i < tmp; i++) {
+
+
+		for (j = 0; j < tmp; j++)
+
+
+		{
+
+
+			*(matrix + i*tmp + j) = 0;
+
+
+			//printf("%d", *(matrix + i + j));
+
+
+		}
+
+
+		//printf("\n", *(matrix + i*tmp + j));
+
+
+	}
+
+
+	return (matrix);
+
+
+	free(matrix);
+
+
+};
+
+
+//shuffle//return number is 1//linked list
+
+
+int shuffle()
+
+
+{
+
+
+	struct node_pointer {
+
+
+		NODE *ptr;
+
+
+		NODE *head;
+
+
+	}nodewanted,*node_pointer;
+
+
+	node_pointer=&nodewanted;
+
+
+	int tmp, i, j, k = 40, tem;
+
+
+	tmp = 100;
+
+
+	//(*node_pointer).head = NULL;//empty list
+
+
+	srand(time(NULL));
+
+
+	for (i = 0; i < tmp; i++)
+
+
+	{
+
+
+		head = add_node(head, NULL, i);
+
+
+	}
+
+
+	node_pointer->head = head;
+
+
+	for (j = 0; j <k ; j++)
+
+
+	{
+
+
+		tem = (65535 % ((rand() % (100 - j)) + 1));
+
+
+		node_pointer->ptr = find_pointernode(node_pointer->head, tem);
+
+
+		node_pointer->ptr = cut_andsave_node(head, node_pointer->ptr);
+
+
+		ans = add_node(ans, NULL, node_pointer->ptr->num);//bug_forfirstpoint
+
+
+	}
+
+
+	system("pause");
+
+
+	return(ans);
+	
+
+}
